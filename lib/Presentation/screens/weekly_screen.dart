@@ -5,13 +5,13 @@ import '../../data/repositories/weather_repository.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/widgets/loading_widget.dart';
 import '../../core/widgets/error_widget.dart';
+import '../../core/widgets/animated_weather_icon.dart';
+import '../../core/widgets/neumorphic_card.dart';
 import '../../core/utils/country_helper.dart';
 import '../widgets/weather_card.dart';
 
-/// Weekly Screen - Displays weekly weather forecast and statistics
-/// This screen shows weekly weather summary and trends for the selected city
 class WeeklyScreen extends StatefulWidget {
-  final CityModel? selectedCity;     // Currently selected city
+  final CityModel? selectedCity;
   
   const WeeklyScreen({
     Key? key,
@@ -23,15 +23,13 @@ class WeeklyScreen extends StatefulWidget {
 }
 
 class _WeeklyScreenState extends State<WeeklyScreen> {
-  // State variables
-  bool _isLoading = false;                  // Tracks if API call is in progress
-  String _errorMessage = '';                // Stores error messages
-  WeeklyWeatherModel? _weeklyForecast;      // Stores weekly forecast data
-  
+  bool _isLoading = false;
+  String _errorMessage = '';
+  WeeklyWeatherModel? _weeklyForecast;
+
   @override
   void initState() {
     super.initState();
-    // Load weekly forecast if city is already selected
     if (widget.selectedCity != null) {
       _loadWeeklyForecast();
     }
@@ -40,14 +38,11 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
   @override
   void didUpdateWidget(WeeklyScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
-    // Reload forecast data if city changed
     if (widget.selectedCity != oldWidget.selectedCity && widget.selectedCity != null) {
       _loadWeeklyForecast();
     }
   }
 
-  /// Loads weekly forecast data for the selected city
   Future<void> _loadWeeklyForecast() async {
     if (widget.selectedCity == null) return;
     
@@ -57,9 +52,7 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     });
 
     try {
-      // Call repository to get weekly forecast
       final forecast = await WeatherRepository.getWeeklyForecast(widget.selectedCity!);
-      
       if (mounted) {
         setState(() {
           _weeklyForecast = forecast;
@@ -77,7 +70,6 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     }
   }
 
-  /// Handles refresh action
   Future<void> _onRefresh() async {
     await _loadWeeklyForecast();
   }
@@ -85,34 +77,25 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.backgroundColor,
+      backgroundColor: AppConstants.getBackgroundColor(context),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _onRefresh,
-          color: AppConstants.accentColor,
+          color: AppConstants.getPrimaryColor(context),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
                   _buildHeader(),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Main content based on state
-                  if (widget.selectedCity == null)
-                    _buildNoCitySelected()
-                  else if (_isLoading)
-                    _buildLoadingState()
-                  else if (_errorMessage.isNotEmpty)
-                    _buildErrorState()
-                  else if (_weeklyForecast != null)
-                    _buildWeeklyContent()
-                  else
-                    _buildNoDataState(),
+                  const SizedBox(height: 24),
+                  if (widget.selectedCity == null) _buildNoCitySelected()
+                  else if (_isLoading) _buildLoadingState()
+                  else if (_errorMessage.isNotEmpty) _buildErrorState()
+                  else if (_weeklyForecast != null) _buildWeeklyContent()
+                  else _buildNoDataState(),
                 ],
               ),
             ),
@@ -122,14 +105,13 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     );
   }
 
-  /// Builds the header section
   Widget _buildHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Weekly Forecast',
-          style: AppConstants.titleTextStyle,
+          style: AppConstants.getTitleStyle(context),
         ),
         if (widget.selectedCity != null) ...[
           const SizedBox(height: 8),
@@ -137,13 +119,13 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
             children: [
               Text(
                 CountryHelper.countryCodeToEmoji(widget.selectedCity!.countryCode),
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 20),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   widget.selectedCity!.displayName,
-                  style: AppConstants.subtitleTextStyle,
+                  style: AppConstants.getSubtitleStyle(context),
                 ),
               ),
             ],
@@ -153,28 +135,34 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     );
   }
 
-  /// Builds the no city selected state
   Widget _buildNoCitySelected() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 100),
-          Icon(
-            Icons.location_off,
-            size: 64,
-            color: AppConstants.secondaryTextColor,
+          const SizedBox(height: 80),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppConstants.getPrimaryColor(context).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.location_off_rounded,
+              size: 64,
+              color: AppConstants.getSecondaryTextColor(context),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             'No Location Selected',
-            style: AppConstants.titleTextStyle,
+            style: AppConstants.getTitleStyle(context),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             'Please search and select a city to view weekly forecast.',
-            style: AppConstants.subtitleTextStyle,
+            style: AppConstants.getSubtitleStyle(context),
             textAlign: TextAlign.center,
           ),
         ],
@@ -182,51 +170,60 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     );
   }
 
-  /// Builds the loading state
   Widget _buildLoadingState() {
     return const Center(
       child: LoadingWidget(
         message: 'Loading weekly forecast...',
-        size: 32,
+        size: 48,
       ),
     );
   }
 
-  /// Builds the error state
   Widget _buildErrorState() {
     return Center(
       child: AppErrorWidget(
         message: _errorMessage,
         onRetry: _loadWeeklyForecast,
-        icon: Icons.date_range,
+        icon: Icons.date_range_rounded,
       ),
     );
   }
 
-  /// Builds the no data state
   Widget _buildNoDataState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 100),
-          Icon(
-            Icons.date_range,
-            size: 64,
-            color: AppConstants.secondaryTextColor,
+          const SizedBox(height: 80),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppConstants.getPrimaryColor(context).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.date_range_rounded,
+              size: 64,
+              color: AppConstants.getSecondaryTextColor(context),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             'No Weekly Data',
-            style: AppConstants.titleTextStyle,
+            style: AppConstants.getTitleStyle(context),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           ElevatedButton(
             onPressed: _loadWeeklyForecast,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppConstants.primaryColor,
-              foregroundColor: AppConstants.textColor,
+              backgroundColor: AppConstants.getPrimaryColor(context),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 8,
             ),
             child: const Text('Load Forecast'),
           ),
@@ -235,35 +232,27 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
     );
   }
 
-  /// Builds the weekly forecast content
   Widget _buildWeeklyContent() {
     if (_weeklyForecast == null) return const SizedBox();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Week summary cards
+        // Week summary
         _buildWeekSummary(),
-        
-        const SizedBox(height: 20),
-        
+        const SizedBox(height: 24),
         // Weekly statistics
         _buildWeeklyStatistics(),
-        
-        const SizedBox(height: 20),
-        
+        const SizedBox(height: 24),
         // Daily breakdown
         _buildDailyBreakdown(),
-        
-        const SizedBox(height: 20),
-        
+        const SizedBox(height: 24),
         // Last updated info
         _buildLastUpdatedInfo(),
       ],
     );
   }
 
-  /// Builds the week summary cards
   Widget _buildWeekSummary() {
     final todayForecast = _weeklyForecast!.todayForecast;
     final tomorrowForecast = _weeklyForecast!.tomorrowForecast;
@@ -273,41 +262,31 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
       children: [
         Text(
           'Week Summary',
-          style: AppConstants.bodyTextStyle.copyWith(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: AppConstants.getTitleStyle(context).copyWith(fontSize: 20),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         
         // Today and Tomorrow cards
         Row(
           children: [
-            if (todayForecast != null)
+            if (todayForecast != null) 
               Expanded(
-                child: WeatherCard(
-                  title: 'Today',
-                  temperature: todayForecast.temperatureRange,
-                  subtitle: todayForecast.description,
-                  icon: const Icon(
-                    Icons.today,
-                    color: AppConstants.accentColor,
-                    size: 20,
-                  ),
+                child: _buildSummaryCard(
+                  'Today',
+                  todayForecast.temperatureRange,
+                  todayForecast.description,
+                  getWeatherType(todayForecast.description),
                 ),
               ),
-            const SizedBox(width: 12),
+            if (todayForecast != null && tomorrowForecast != null) 
+              const SizedBox(width: 16),
             if (tomorrowForecast != null)
               Expanded(
-                child: WeatherCard(
-                  title: 'Tomorrow',
-                  temperature: tomorrowForecast.temperatureRange,
-                  subtitle: tomorrowForecast.description,
-                  icon: const Icon(
-                    Icons.calendar_today,
-                    color: AppConstants.accentColor,
-                    size: 20,
-                  ),
+                child: _buildSummaryCard(
+                  'Tomorrow',
+                  tomorrowForecast.temperatureRange,
+                  tomorrowForecast.description,
+                  getWeatherType(tomorrowForecast.description),
                 ),
               ),
           ],
@@ -316,279 +295,556 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
         const SizedBox(height: 16),
         
         // Week temperature range
-        WeatherCard(
-          title: 'Week Temperature Range',
-          temperature: '${_weeklyForecast!.weekHighestTemp} / ${_weeklyForecast!.weekLowestTemp}',
-          subtitle: 'High / Low for the week',
-          additionalInfo: 'Average Humidity: ${_weeklyForecast!.averageHumidity.toStringAsFixed(1)}%',
-          icon: const Icon(
-            Icons.thermostat,
-            color: AppConstants.accentColor,
-            size: 24,
+        Container(
+          decoration: BoxDecoration(
+            color: AppConstants.getCardColor(context),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(2, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.thermostat_rounded,
+                  color: AppConstants.getPrimaryColor(context),
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Week Temperature Range',
+                        style: TextStyle(
+                          color: AppConstants.getTextColor(context),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_weeklyForecast!.weekHighestTemp} / ${_weeklyForecast!.weekLowestTemp}',
+                        style: TextStyle(
+                          color: AppConstants.getTextColor(context),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'High / Low for the week • Avg Humidity: ${_weeklyForecast!.averageHumidity.toStringAsFixed(1)}%',
+                        style: TextStyle(
+                          color: AppConstants.getSecondaryTextColor(context),
+                          fontSize: 11,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  /// Builds weekly statistics
+  Widget _buildSummaryCard(String title, String temperature, String description, WeatherType weatherType) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: _getGradientColors(weatherType),
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: _getGradientColors(weatherType).first.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        temperature,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 12,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                AnimatedWeatherIcon(
+                  weatherType: weatherType,
+                  size: 40,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildWeeklyStatistics() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Weekly Statistics',
-          style: AppConstants.bodyTextStyle.copyWith(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: AppConstants.getTitleStyle(context).copyWith(fontSize: 20),
         ),
-        const SizedBox(height: 12),
-        
-        GridView.count(
+        const SizedBox(height: 16),
+        _buildStatisticsGrid(),
+      ],
+    );
+  }
+
+  Widget _buildStatisticsGrid() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.5,
+          childAspectRatio: constraints.maxWidth > 400 ? 1.4 : 1.2,
           children: [
-            // Forecast days count
-            WeatherCard(
-              title: 'Forecast Days',
-              temperature: '${_weeklyForecast!.forecastDaysCount}',
-              subtitle: 'Days available',
-              icon: const Icon(
-                Icons.calendar_today,
-                color: AppConstants.accentColor,
-                size: 20,
+            _buildWeeklyGridCard(
+              'Forecast Days',
+              '${_weeklyForecast!.forecastDaysCount}',
+              'Days available',
+              Icons.calendar_today_rounded,
+            ),
+            _buildWeeklyGridCard(
+              'Avg Humidity',
+              '${_weeklyForecast!.averageHumidity.toStringAsFixed(1)}%',
+              'Week average',
+              Icons.water_drop_rounded,
+            ),
+            _buildWeeklyGridCard(
+              'Week High',
+              _weeklyForecast!.weekHighestTemp,
+              'Maximum temp',
+              Icons.arrow_upward_rounded,
+              iconColor: Colors.red,
+            ),
+            _buildWeeklyGridCard(
+              'Week Low',
+              _weeklyForecast!.weekLowestTemp,
+              'Minimum temp',
+              Icons.arrow_downward_rounded,
+              iconColor: Colors.blue,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildWeeklyGridCard(String title, String value, String subtitle, IconData icon, {Color? iconColor}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppConstants.getCardColor(context),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: iconColor ?? AppConstants.getPrimaryColor(context),
+              size: 20,
+            ),
+            const SizedBox(height: 6),
+            Flexible(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: AppConstants.getSecondaryTextColor(context),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            
-            // Average humidity
-            WeatherCard(
-              title: 'Avg Humidity',
-              temperature: '${_weeklyForecast!.averageHumidity.toStringAsFixed(1)}%',
-              subtitle: 'Week average',
-              icon: const Icon(
-                Icons.water_drop,
-                color: AppConstants.accentColor,
-                size: 20,
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: TextStyle(
+                color: AppConstants.getTextColor(context),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            
-            // Highest temperature
-            WeatherCard(
-              title: 'Week High',
-              temperature: _weeklyForecast!.weekHighestTemp,
-              subtitle: 'Maximum temp',
-              icon: const Icon(
-                Icons.keyboard_arrow_up,
-                color: Colors.red,
-                size: 20,
-              ),
-            ),
-            
-            // Lowest temperature
-            WeatherCard(
-              title: 'Week Low',
-              temperature: _weeklyForecast!.weekLowestTemp,
-              subtitle: 'Minimum temp',
-              icon: const Icon(
-                Icons.keyboard_arrow_down,
-                color: Colors.blue,
-                size: 20,
+            const SizedBox(height: 2),
+            Flexible(
+              child: Text(
+                subtitle,
+                style: TextStyle(
+                  color: AppConstants.getSecondaryTextColor(context),
+                  fontSize: 9,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  /// Builds daily breakdown for the week
   Widget _buildDailyBreakdown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Daily Breakdown',
-          style: AppConstants.bodyTextStyle.copyWith(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: AppConstants.getTitleStyle(context).copyWith(fontSize: 20),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         
         // Horizontal scrollable daily cards
         SizedBox(
-          height: 160,
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _weeklyForecast!.dailyForecasts.length,
             itemBuilder: (context, index) {
               final dailyForecast = _weeklyForecast!.dailyForecasts[index];
+              final weatherType = getWeatherType(dailyForecast.description);
               final dayLabel = index == 0 ? 'Today' : dailyForecast.dayName.substring(0, 3);
               
               return Container(
-                width: 120,
-                margin: const EdgeInsets.only(right: 8),
-                child: WeatherCard(
-                  title: dayLabel,
-                  temperature: dailyForecast.temperatureRange,
-                  subtitle: dailyForecast.description,
-                  additionalInfo: '${dailyForecast.rainChanceString} rain',
-                  icon: const Icon(
-                    Icons.wb_cloudy,
-                    color: AppConstants.accentColor,
-                    size: 20,
-                  ),
+                width: 140,
+                margin: EdgeInsets.only(
+                  right: index < _weeklyForecast!.dailyForecasts.length - 1 ? 12 : 0,
+                ),
+                child: _buildDailyCard(
+                  dayLabel,
+                  dailyForecast.temperatureRange,
+                  dailyForecast.description,
+                  '${dailyForecast.rainChanceString} rain',
+                  weatherType,
                 ),
               );
             },
           ),
         ),
         
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         
         // Detailed daily list
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _weeklyForecast!.dailyForecasts.length,
-          itemBuilder: (context, index) {
-            final dailyForecast = _weeklyForecast!.dailyForecasts[index];
-            final dayLabel = index == 0 ? 'Today' : dailyForecast.dayName;
-            
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ExpansionTile(
-                backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
-                collapsedBackgroundColor: AppConstants.primaryColor.withOpacity(0.05),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                collapsedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                leading: CircleAvatar(
-                  backgroundColor: AppConstants.accentColor.withOpacity(0.2),
-                  child: Text(
-                    dailyForecast.dateString.split(' ')[1], // Day number
-                    style: const TextStyle(
-                      color: AppConstants.textColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                title: Text(
-                  dayLabel,
-                  style: AppConstants.bodyTextStyle.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                subtitle: Text(
-                  '${dailyForecast.temperatureRange} • ${dailyForecast.description}',
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Detailed Forecast',
+              style: AppConstants.getTitleStyle(context).copyWith(fontSize: 18),
+            ),
+            const SizedBox(height: 16),
+            _buildDetailedDailyList(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDailyCard(String title, String temperature, String subtitle, String additionalInfo, WeatherType weatherType) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: _getGradientColors(weatherType),
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: _getGradientColors(weatherType).first.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  temperature,
                   style: const TextStyle(
-                    color: AppConstants.secondaryTextColor,
-                    fontSize: 12,
-                  ),
-                ),
-                trailing: Text(
-                  dailyForecast.rainChanceString,
-                  style: const TextStyle(
-                    color: AppConstants.accentColor,
-                    fontSize: 12,
+                    color: Colors.white,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildDetailItem('Humidity', '${dailyForecast.humidity}%'),
-                        _buildDetailItem('Wind', '${dailyForecast.windSpeed.toStringAsFixed(1)} m/s'),
-                        _buildDetailItem('UV Index', '${dailyForecast.uvIndex.toStringAsFixed(1)}'),
-                        _buildDetailItem('Sunrise', dailyForecast.sunrise),
-                        _buildDetailItem('Sunset', dailyForecast.sunset),
-                      ],
-                    ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 11,
                   ),
-                ],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            Text(
+              additionalInfo,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 10,
               ),
-            );
-          },
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
-      ],
-    );
-  }
-
-  /// Builds a detail item for expanded daily forecast
-  Widget _buildDetailItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: AppConstants.textColor,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppConstants.secondaryTextColor,
-            fontSize: 10,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Builds the last updated information
-  Widget _buildLastUpdatedInfo() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppConstants.primaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.update,
-                color: AppConstants.secondaryTextColor,
-                size: 16,
+    );
+  }
+
+  Widget _buildDetailedDailyList() {
+    return Column(
+      children: _weeklyForecast!.dailyForecasts.map((dailyForecast) {
+        final index = _weeklyForecast!.dailyForecasts.indexOf(dailyForecast);
+        final weatherType = getWeatherType(dailyForecast.description);
+        final dayLabel = index == 0 ? 'Today' : dailyForecast.dayName;
+        
+        return Container(
+          margin: EdgeInsets.only(bottom: index < _weeklyForecast!.dailyForecasts.length - 1 ? 12 : 0),
+          decoration: BoxDecoration(
+            color: AppConstants.getCardColor(context),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ExpansionTile(
+            backgroundColor: Colors.transparent,
+            collapsedBackgroundColor: Colors.transparent,
+            tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: const Border(),
+            collapsedShape: const Border(),
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppConstants.getPrimaryColor(context).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Last updated: ${_weeklyForecast!.lastUpdatedString}',
-                style: const TextStyle(
-                  color: AppConstants.secondaryTextColor,
-                  fontSize: 12,
+              alignment: Alignment.center,
+              child: Text(
+                dailyForecast.dateString.split(' ')[1],
+                style: TextStyle(
+                  color: AppConstants.getPrimaryColor(context),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            title: Text(
+              dayLabel,
+              style: AppConstants.getBodyStyle(context).copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              '${dailyForecast.temperatureRange} • ${dailyForecast.description}',
+              style: TextStyle(
+                color: AppConstants.getSecondaryTextColor(context),
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: Text(
+              dailyForecast.rainChanceString,
+              style: TextStyle(
+                color: AppConstants.getPrimaryColor(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    _buildDetailItem('Humidity', '${dailyForecast.humidity}%'),
+                    _buildDetailItem('Wind', '${dailyForecast.windSpeed.toStringAsFixed(1)} m/s'),
+                    _buildDetailItem('UV Index', '${dailyForecast.uvIndex.toStringAsFixed(1)}'),
+                    _buildDetailItem('Sunrise', dailyForecast.sunrise),
+                    _buildDetailItem('Sunset', dailyForecast.sunset),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDetailItem(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppConstants.getPrimaryColor(context).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
           Text(
-            'Location: ${_weeklyForecast!.locationName}',
-            style: const TextStyle(
-              color: AppConstants.secondaryTextColor,
+            value,
+            style: TextStyle(
+              color: AppConstants.getTextColor(context),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppConstants.getSecondaryTextColor(context),
               fontSize: 10,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildLastUpdatedInfo() {
+    return NeumorphicCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.update_rounded,
+                color: AppConstants.getSecondaryTextColor(context),
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Last updated: ${_weeklyForecast!.lastUpdatedString}',
+                style: TextStyle(
+                  color: AppConstants.getSecondaryTextColor(context),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Location: ${_weeklyForecast!.locationName}',
+            style: TextStyle(
+              color: AppConstants.getSecondaryTextColor(context),
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Color> _getGradientColors(WeatherType weatherType) {
+    switch (weatherType) {
+      case WeatherType.sunny:
+        return AppConstants.sunnyGradient;
+      case WeatherType.cloudy:
+        return AppConstants.cloudyGradient;
+      case WeatherType.rainy:
+        return AppConstants.rainyGradient;
+      case WeatherType.snowy:
+        return [const Color(0xFFA8D0E6), const Color(0xFF74B9FF)];
+      case WeatherType.stormy:
+        return [const Color(0xFF2C3E50), const Color(0xFF4A235A)];
+      case WeatherType.night:
+        return AppConstants.nightGradient;
+      default:
+        return AppConstants.cloudyGradient;
+    }
   }
 }

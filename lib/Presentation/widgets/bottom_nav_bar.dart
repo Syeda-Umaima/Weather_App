@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 
-/// Bottom Navigation Bar Widget - Reusable bottom navigation component
-/// This widget provides consistent navigation across the app
 class AppBottomNavBar extends StatelessWidget {
-  final int currentIndex;          // Currently selected tab index
-  final Function(int) onTap;       // Callback when tab is tapped
+  final int currentIndex;
+  final Function(int) onTap;
   
   const AppBottomNavBar({
     Key? key,
@@ -15,79 +13,98 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      // Navigation bar configuration
-      type: BottomNavigationBarType.fixed, // Show all labels
-      currentIndex: currentIndex,
-      onTap: onTap,
-      
-      // Color scheme
-      selectedItemColor: AppConstants.accentColor,
-      unselectedItemColor: AppConstants.secondaryTextColor,
-      backgroundColor: AppConstants.backgroundColor,
-      
-      // Visual styling
-      elevation: 8,
-      selectedFontSize: 12,
-      unselectedFontSize: 10,
-      
-      // Navigation items
-      items: const <BottomNavigationBarItem>[
-        // Search tab
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          activeIcon: Icon(Icons.search, size: 26),
-          label: AppConstants.searchLabel,
-          tooltip: 'Search for cities',
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: AppConstants.getCardColor(context),
+        boxShadow: [
+          BoxShadow(
+            color: isDark 
+                ? Colors.black.withOpacity(0.3)
+                : Colors.grey.shade300,
+            offset: const Offset(0, -4),
+            blurRadius: 12,
+          ),
+          BoxShadow(
+            color: isDark 
+                ? Colors.white.withOpacity(0.05)
+                : Colors.white,
+            offset: const Offset(0, -2),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(context, 0, Icons.search, AppConstants.searchLabel),
+              _buildNavItem(context, 1, Icons.home_rounded, AppConstants.homeLabel),
+              _buildNavItem(context, 2, Icons.access_time_rounded, AppConstants.hourlyLabel),
+              _buildNavItem(context, 3, Icons.today_rounded, AppConstants.dailyLabel),
+              _buildNavItem(context, 4, Icons.date_range_rounded, AppConstants.weeklyLabel),
+            ],
+          ),
         ),
-        
-        // Home/Current weather tab
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          activeIcon: Icon(Icons.home, size: 26),
-          label: AppConstants.homeLabel,
-          tooltip: 'Current weather',
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
+    final isSelected = currentIndex == index;
+    final primaryColor = AppConstants.getPrimaryColor(context);
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: AppConstants.shortAnimation,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? primaryColor.withOpacity(0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: isSelected 
+                    ? primaryColor
+                    : AppConstants.getSecondaryTextColor(context),
+                size: isSelected ? 28 : 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected 
+                      ? primaryColor
+                      : AppConstants.getSecondaryTextColor(context),
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
-        
-        // Hourly forecast tab
-        BottomNavigationBarItem(
-          icon: Icon(Icons.access_time),
-          activeIcon: Icon(Icons.access_time, size: 26),
-          label: AppConstants.hourlyLabel,
-          tooltip: 'Hourly forecast',
-        ),
-        
-        // Daily forecast tab
-        BottomNavigationBarItem(
-          icon: Icon(Icons.today),
-          activeIcon: Icon(Icons.today, size: 26),
-          label: AppConstants.dailyLabel,
-          tooltip: 'Daily forecast',
-        ),
-        
-        // Weekly forecast tab
-        BottomNavigationBarItem(
-          icon: Icon(Icons.date_range),
-          activeIcon: Icon(Icons.date_range, size: 26),
-          label: AppConstants.weeklyLabel,
-          tooltip: 'Weekly forecast',
-        ),
-      ],
+      ),
     );
   }
 }
 
-/// Tab Navigation Helper - Utility class for navigation logic
-/// This class provides helper methods for tab navigation management
 class TabNavigationHelper {
-  /// Navigation tab indices
   static const int searchTab = 0;
   static const int homeTab = 1;
   static const int hourlyTab = 2;
   static const int dailyTab = 3;
   static const int weeklyTab = 4;
   
-  /// Get tab title for the given index
   static String getTabTitle(int index) {
     switch (index) {
       case searchTab:
@@ -105,7 +122,6 @@ class TabNavigationHelper {
     }
   }
   
-  /// Check if the given tab requires weather data
   static bool requiresWeatherData(int index) {
     return index == homeTab || 
            index == hourlyTab || 
@@ -113,7 +129,6 @@ class TabNavigationHelper {
            index == weeklyTab;
   }
   
-  /// Check if the given tab is a forecast tab
   static bool isForecastTab(int index) {
     return index == hourlyTab || 
            index == dailyTab || 
