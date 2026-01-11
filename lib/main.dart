@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/constants/app_constants.dart';
+import 'core/constants/api_constants.dart';
+import 'core/widgets/splash_screen.dart';
 import 'data/models/city_model.dart';
 import 'presentation/screens/search_screen.dart';
 import 'presentation/screens/home_screen.dart';
@@ -27,12 +29,19 @@ class WeatherApp extends StatefulWidget {
 
 class _WeatherAppState extends State<WeatherApp> {
   ThemeMode _themeMode = ThemeMode.dark;
+  bool _showSplash = true;
 
   void _toggleTheme() {
     setState(() {
       _themeMode = _themeMode == ThemeMode.light 
           ? ThemeMode.dark 
           : ThemeMode.light;
+    });
+  }
+
+  void _onSplashComplete() {
+    setState(() {
+      _showSplash = false;
     });
   }
 
@@ -45,7 +54,7 @@ class _WeatherAppState extends State<WeatherApp> {
       
       // Light Theme
       theme: ThemeData(
-        useMaterial3: true,  // Enable Material 3 here
+        useMaterial3: true,
         brightness: Brightness.light,
         primaryColor: AppConstants.lightPrimary,
         scaffoldBackgroundColor: AppConstants.lightBackground,
@@ -70,7 +79,7 @@ class _WeatherAppState extends State<WeatherApp> {
       
       // Dark Theme
       darkTheme: ThemeData(
-        useMaterial3: true,  // Enable Material 3 here
+        useMaterial3: true,
         brightness: Brightness.dark,
         primaryColor: AppConstants.darkPrimary,
         scaffoldBackgroundColor: AppConstants.darkBackground,
@@ -93,7 +102,164 @@ class _WeatherAppState extends State<WeatherApp> {
         ),
       ),
       
-      home: MainScreen(onToggleTheme: _toggleTheme),
+      home: _showSplash 
+    ? SplashScreen(onComplete: _onSplashComplete)
+    : MainScreen(onToggleTheme: _toggleTheme),
+    );
+  }
+}
+
+// Screen shown when API keys are not configured
+class ApiConfigurationScreen extends StatelessWidget {
+  final VoidCallback onToggleTheme;
+  
+  const ApiConfigurationScreen({
+    Key? key,
+    required this.onToggleTheme,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppConstants.getBackgroundColor(context),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppConstants.warningColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.vpn_key_rounded,
+                  size: 64,
+                  color: AppConstants.warningColor,
+                ),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'API Configuration Required',
+                style: AppConstants.getTitleStyle(context),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'This app requires API keys to function. Please run the app with the following command:',
+                style: AppConstants.getSubtitleStyle(context),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppConstants.getCardColor(context),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'flutter run \\',
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: AppConstants.getTextColor(context),
+                      ),
+                    ),
+                    Text(
+                      '  --dart-define=OPENWEATHER_API_KEY=your_key \\',
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: AppConstants.getPrimaryColor(context),
+                      ),
+                    ),
+                    Text(
+                      '  --dart-define=GEONAMES_USERNAME=your_username',
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: AppConstants.getPrimaryColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Get your free API keys from:',
+                style: AppConstants.getBodyStyle(context),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '• OpenWeatherMap: openweathermap.org/api\n• GeoNames: geonames.org/login',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppConstants.getSecondaryTextColor(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildStatusChip(
+                    context,
+                    'Weather API',
+                    ApiConstants.hasWeatherApiKey,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildStatusChip(
+                    context,
+                    'GeoNames API',
+                    ApiConstants.hasGeoNamesCredentials,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(BuildContext context, String label, bool isConfigured) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: isConfigured 
+            ? AppConstants.successColor.withOpacity(0.1)
+            : AppConstants.errorColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isConfigured ? AppConstants.successColor : AppConstants.errorColor,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isConfigured ? Icons.check_circle : Icons.cancel,
+            size: 16,
+            color: isConfigured ? AppConstants.successColor : AppConstants.errorColor,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isConfigured ? AppConstants.successColor : AppConstants.errorColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

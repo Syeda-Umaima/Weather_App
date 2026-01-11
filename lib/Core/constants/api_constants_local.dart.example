@@ -1,0 +1,18 @@
+// ============================================================
+// TEMPLATE FILE - Copy to api_constants_local.dart
+// ============================================================
+// 
+// Steps:
+// 1. Copy this file and rename to: api_constants_local.dart
+// 2. Replace the placeholder values with your actual API keys
+// 3. Never commit api_constants_local.dart to Git!
+//
+// Get your free API keys from:
+// - OpenWeatherMap: https://openweathermap.org/api
+// - GeoNames: https://www.geonames.org/login
+// ============================================================
+
+class ApiKeys {
+  static const String openWeatherApiKey = 'YOUR_OPENWEATHER_API_KEY_HERE';
+  static const String geoNamesUsername = 'YOUR_GEONAMES_USERNAME_HERE';
+}

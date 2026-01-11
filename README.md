@@ -1,304 +1,246 @@
-# 🌤️ Weather App - Flutter
+# 🌤️ Weather App
 
 <div align="center">
 
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=for-the-badge)
+![Weather App Banner](assets/screenshots/feature_banner.png)
 
-**A beautiful and intuitive weather application built with Flutter**
+**A beautiful, feature-rich weather application built with Flutter**
 
-[Features](#-features) • [Screenshots](#-screenshots) • [Getting Started](#-getting-started) • [Architecture](#-project-architecture) • [APIs Used](#-apis-used) • [Roadmap](#-roadmap)
+[![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![OpenWeatherMap](https://img.shields.io/badge/API-OpenWeatherMap-orange?style=for-the-badge)](https://openweathermap.org)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+[Features](#-features) • [Screenshots](#-screenshots) • [Installation](#-installation) • [Configuration](#%EF%B8%8F-configuration) • [Architecture](#-architecture)
 
 </div>
 
 ---
 
-## 📱 Screenshots
+## 📋 Overview
 
-> **Add the following screenshots to showcase your app:**
-
-### 1. Search Page - Initial State
-**Screenshot:** `screenshots/01_search_initial.png`
-- Shows the "Pick Location" screen
-- Search bar with placeholder text
-- Empty state before user input
-
-### 2. Search Page - City Suggestions
-**Screenshot:** `screenshots/02_search_suggestions.png`
-- User typing in search bar (e.g., "London")
-- List of city suggestions with country flags 🇬🇧
-- Latitude and Longitude displayed for each city
-
-### 3. Search Page - Loading State
-**Screenshot:** `screenshots/03_search_loading.png`
-- Circular progress indicator while fetching cities
-- Shows debouncing in action
-
-### 4. Home Page - Weather Display
-**Screenshot:** `screenshots/04_home_weather.png`
-- Current temperature displayed
-- Selected city weather information
-
-### 5. Bottom Navigation Bar
-**Screenshot:** `screenshots/05_bottom_nav.png`
-- Shows all three tabs: Search, Home, Settings
-- Highlight the selected tab with amber accent color
-
-### 6. Error State
-**Screenshot:** `screenshots/06_error_state.png`
-- Error message displayed when API fails
-- User-friendly error handling
+**Weather App** is a modern, beautifully designed weather application that provides real-time weather information with an elegant neumorphic UI. Search for any city worldwide and get current conditions, hourly forecasts, daily forecasts, and weekly predictions.
 
 ---
 
 ## ✨ Features
 
-### 🎯 Current Features (v0.1)
-
-- ✅ **City Search with Autocomplete**
-  - Real-time city search with debouncing (500ms delay)
-  - Displays up to 10 city suggestions
-  - Shows country emoji flags 🌍
-  - Displays latitude and longitude coordinates
-
-- ✅ **Weather Information**
-  - Fetches current temperature on city selection
-  - Temperature displayed in Celsius (°C)
-  - Smooth navigation to weather details
-
-- ✅ **Bottom Navigation**
-  - Three-tab navigation system
-  - Search, Home, and Settings tabs
-  - Amber accent for selected tab
-
-- ✅ **Loading & Error States**
-  - Separate loading indicators for city and weather APIs
-  - User-friendly error messages
-  - Graceful error handling
-
-- ✅ **Smart UX Features**
-  - Auto-clear previous weather on new search
-  - Debounced API calls to reduce server load
-  - Empty state handling
+| Feature | Description |
+|---------|-------------|
+| 🔍 **City Search** | Search any city globally with auto-suggestions |
+| 🌡️ **Current Weather** | Real-time temperature, humidity, wind, and conditions |
+| ⏰ **Hourly Forecast** | 24-hour weather predictions with 3-hour intervals |
+| 📅 **Daily Forecast** | Day-by-day weather for planning ahead |
+| 📊 **Weekly Overview** | Full 7-day weather forecast |
+| 🎨 **Animated Icons** | Beautiful animated weather icons (sun, clouds, rain, snow) |
+| 🌓 **Dark/Light Mode** | Toggle between themes with smooth transitions |
+| 💫 **Splash Screen** | Animated splash with weather-themed elements |
+| 📱 **Neumorphic UI** | Modern soft-shadow design language |
 
 ---
 
-## 🚀 Getting Started
+## 📱 Screenshots
+
+<div align="center">
+
+| Splash | Search | Home |
+|:------:|:------:|:----:|
+| ![Splash](assets/screenshots/splash.png) | ![Search](assets/screenshots/search.png) | ![Home](assets/screenshots/home.png) |
+
+| Hourly | Daily | Weekly |
+|:------:|:-----:|:------:|
+| ![Hourly](assets/screenshots/hourly.png) | ![Daily](assets/screenshots/daily.png) | ![Weekly](assets/screenshots/weekly.png) |
+
+| Light Theme | Dark Theme |
+|:-----------:|:----------:|
+| ![Light](assets/screenshots/light_theme.png) | ![Dark](assets/screenshots/dark_theme.png) |
+
+</div>
+
+---
+
+## 🚀 Installation
 
 ### Prerequisites
+- Flutter SDK 3.0+
+- Dart SDK 3.0+
+- OpenWeatherMap API Key (free)
+- GeoNames Username (free)
 
-- **Flutter SDK:** >= 3.0.0
-- **Dart SDK:** >= 3.0.0
-- **IDE:** Android Studio, VS Code, or IntelliJ IDEA
-- **APIs:** Active API keys for weather services
+### Steps
 
-### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Syeda-Umaima/weather_app.git
+cd weather_app
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/weather-app.git
-   cd weather-app
-   ```
+# Install dependencies
+flutter pub get
 
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Configure API Keys**
-   - Open `weather_api.dart`
-   - Replace the OpenWeatherMap API key with your own:
-     ```dart
-     appid=YOUR_API_KEY_HERE
-     ```
-   - Open `city_api.dart`
-   - Replace the GeoNames username with your own:
-     ```dart
-     username=YOUR_USERNAME_HERE
-     ```
-
-4. **Run the app**
-   ```bash
-   flutter run
-   ```
-
----
-
-## 📂 Project Architecture
-
-### Current Structure (v0.1)
-```
-lib/
-├── main.dart              # App entry point, bottom navigation setup
-├── search_page.dart       # City search screen with autocomplete
-├── home_page.dart         # Weather display screen
-├── city_api.dart          # GeoNames API integration
-└── weather_api.dart       # OpenWeatherMap API integration
-```
-
-### 🎯 Planned Structure (v1.0 - Upcoming)
-```
-lib/
-├── main.dart
-├── core/
-│   ├── constants/         # App constants, API keys
-│   ├── utils/            # Helper functions, extensions
-│   └── theme/            # App theme, colors, text styles
-├── data/
-│   ├── models/           # Data models (City, Weather)
-│   ├── repositories/     # Data repositories
-│   └── services/         # API services
-└── presentation/
-    ├── screens/          # UI screens
-    │   ├── search/
-    │   ├── home/
-    │   └── settings/
-    ├── widgets/          # Reusable widgets
-    └── providers/        # State management (Provider/Riverpod)
+# Run the app (see Configuration section for API keys)
+flutter run \
+  --dart-define=OPENWEATHER_API_KEY=your_api_key \
+  --dart-define=GEONAMES_USERNAME=your_username
 ```
 
 ---
 
-## 🌐 APIs Used
+## ⚙️ Configuration
 
-### 1. **GeoNames API** (City Search)
-- **Endpoint:** `http://api.geonames.org/searchJSON`
-- **Purpose:** Search cities by name
-- **Features:**
-  - Returns city name, country, coordinates
-  - Maximum 10 results per query
-- **Documentation:** [GeoNames.org](http://www.geonames.org/export/web-services.html)
+This app requires API keys to fetch weather data. **API keys are NOT stored in the code** for security.
 
-### 2. **OpenWeatherMap API** (Weather Data)
-- **Endpoint:** `https://api.openweathermap.org/data/2.5/weather`
-- **Purpose:** Fetch current weather data
-- **Features:**
-  - Temperature in Celsius
-  - Weather conditions, humidity, wind speed (expandable)
-- **Documentation:** [OpenWeatherMap.org](https://openweathermap.org/api)
+### Getting API Keys
+
+1. **OpenWeatherMap API Key** (Free)
+   - Go to [openweathermap.org/api](https://openweathermap.org/api)
+   - Sign up for a free account
+   - Navigate to "API Keys" tab
+   - Generate a new API key
+
+2. **GeoNames Username** (Free)
+   - Go to [geonames.org/login](https://www.geonames.org/login)
+   - Create a free account
+   - Enable free web services in account settings
+
+### Running with API Keys
+
+```bash
+# Method 1: Command line (recommended for development)
+flutter run \
+  --dart-define=OPENWEATHER_API_KEY=your_openweather_key \
+  --dart-define=GEONAMES_USERNAME=your_geonames_username
+
+# Method 2: VS Code launch.json
+# Add to .vscode/launch.json:
+{
+  "configurations": [
+    {
+      "name": "weather_app",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=OPENWEATHER_API_KEY=your_key",
+        "--dart-define=GEONAMES_USERNAME=your_username"
+      ]
+    }
+  ]
+}
+
+# Method 3: Build for release
+flutter build apk \
+  --dart-define=OPENWEATHER_API_KEY=your_key \
+  --dart-define=GEONAMES_USERNAME=your_username
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+lib/
+├── main.dart                    # Entry point with splash & navigation
+├── Core/
+│   ├── constants/
+│   │   ├── api_constants.dart   # API URLs & secure key handling
+│   │   └── app_constants.dart   # Theme colors, strings, styles
+│   ├── utils/
+│   │   ├── country_helper.dart  # Country code to emoji flags
+│   │   └── date_helper.dart     # Date formatting utilities
+│   └── widgets/
+│       ├── animated_weather_icon.dart  # Animated weather icons
+│       ├── error_widget.dart    # Error state display
+│       ├── loading_widget.dart  # Loading indicators
+│       ├── neumorphic_card.dart # Neumorphic UI components
+│       └── splash_screen.dart   # Animated splash screen
+├── Data/
+│   ├── models/
+│   │   ├── city_model.dart      # City search result model
+│   │   ├── weather_model.dart   # Current weather model
+│   │   ├── hourly_weather_model.dart
+│   │   ├── daily_weather_model.dart
+│   │   └── weekly_weather_model.dart
+│   ├── repositories/
+│   │   ├── city_repository.dart     # City data operations
+│   │   └── weather_repository.dart  # Weather data operations
+│   └── services/
+│       ├── city_api_service.dart    # GeoNames API calls
+│       └── weather_api_service.dart # OpenWeatherMap API calls
+└── Presentation/
+    ├── screens/
+    │   ├── search_screen.dart   # City search screen
+    │   ├── home_screen.dart     # Current weather display
+    │   ├── hourly_screen.dart   # Hourly forecast
+    │   ├── daily_screen.dart    # Daily forecast
+    │   └── weekly_screen.dart   # Weekly forecast
+    └── widgets/
+        ├── bottom_nav_bar.dart  # Custom navigation bar
+        ├── city_list_item.dart  # City search result item
+        └── weather_card.dart    # Weather info card
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Category | Technology |
-|----------|-----------|
-| **Framework** | Flutter 3.x |
-| **Language** | Dart 3.x |
-| **State Management** | StatefulWidget (migrating to Provider/Riverpod) |
+|----------|------------|
+| **Framework** | Flutter 3.0+ |
+| **Language** | Dart 3.0+ |
+| **Weather API** | OpenWeatherMap (Free tier) |
+| **City Search API** | GeoNames (Free tier) |
 | **HTTP Client** | http package |
-| **Navigation** | Flutter Navigator 2.0 |
-| **UI Components** | Material Design 3 |
+| **UI Design** | Neumorphic / Material Design 3 |
+| **Security** | Environment variables via dart-define |
 
 ---
 
-## 🗺️ Roadmap
+## 🌈 Weather Icons
 
-### ✅ Phase 1: Basic Functionality (Current)
-- [x] City search with GeoNames API
-- [x] Basic weather display
-- [x] Bottom navigation structure
-- [x] Loading and error states
+The app features custom animated weather icons:
 
-### 🚧 Phase 2: Architecture Refactoring (In Progress)
-- [ ] Implement clean architecture (core/data/presentation)
-- [ ] Add state management (Provider/Riverpod/Bloc)
-- [ ] Separate concerns (repositories, services)
-- [ ] Create reusable widget library
-
-### 📋 Phase 3: Enhanced Weather Features (Planned)
-- [ ] **Detailed Weather Display**
-  - Current conditions with icon
-  - "Feels like" temperature
-  - Humidity, wind speed, pressure
-  - Sunrise/sunset times
-  
-- [ ] **Hourly Forecast**
-  - Next 48 hours forecast
-  - Temperature graph/chart
-  - Precipitation probability
-  
-- [ ] **Daily Forecast**
-  - 7-day forecast
-  - High/low temperatures
-  - Weather conditions
-  
-- [ ] **Weekly Overview**
-  - Extended forecast visualization
-  - Weather trends
-
-### 📋 Phase 4: Advanced Features (Future)
-- [ ] **Multiple Location Support**
-  - Save favorite cities
-  - Quick switch between locations
-  
-- [ ] **Location Services**
-  - Auto-detect current location
-  - GPS integration
-  
-- [ ] **Settings Screen**
-  - Toggle temperature units (°C/°F)
-  - Change theme (light/dark mode)
-  - Notification preferences
-  
-- [ ] **Offline Support**
-  - Cache weather data
-  - Offline mode with last fetched data
-  
-- [ ] **Weather Alerts**
-  - Push notifications for severe weather
-  - Custom alert preferences
-
-### 📋 Phase 5: Polish & Optimization
-- [ ] Animations and transitions
-- [ ] Performance optimization
-- [ ] Unit and widget testing
-- [ ] CI/CD pipeline
-- [ ] App store deployment
+| Icon | Condition | Animation |
+|:----:|-----------|-----------|
+| ☀️ | Sunny/Clear | Rotating glow |
+| ☁️ | Cloudy | Floating bounce |
+| 🌧️ | Rainy | Falling raindrops |
+| ❄️ | Snowy | Falling snowflakes |
+| ⛈️ | Stormy | Flashing lightning |
+| 🌙 | Night | Pulsing glow |
 
 ---
 
-## 📊 Current Data Models
+## 🔐 Security
 
-### City Model
-```dart
-class City {
-  final String name;           // City name
-  final String Countryname;    // Full country name
-  final String countryCode;    // ISO country code (for emoji)
-  final double lat;            // Latitude
-  final double lng;            // Longitude
-}
-```
+This app follows security best practices:
 
-### Weather Model
-```dart
-class Weather {
-  final String temperature;    // Temperature in Celsius
-  // More fields to be added: humidity, windSpeed, condition, etc.
-}
-```
+- ✅ API keys are **NOT** hardcoded in source code
+- ✅ Uses `--dart-define` for compile-time configuration
+- ✅ `.gitignore` excludes all sensitive files
+- ✅ Example `.env.example` provided for reference
+- ✅ API key validation on startup
 
 ---
 
-## 🎨 Design Philosophy
+## 🚀 Future Enhancements
 
-- **Clean & Modern UI:** Material Design 3 principles
-- **Dark Theme:** Eye-friendly dark mode by default
-- **Intuitive Navigation:** Bottom navigation for easy access
-- **Smooth Interactions:** Loading states and error handling
-- **Performance First:** Debounced searches, optimized API calls
+- [ ] GPS-based current location weather
+- [ ] Weather notifications & alerts
+- [ ] Offline caching with local storage
+- [ ] Weather widgets for home screen
+- [ ] Multiple saved locations
+- [ ] Weather maps integration
+- [ ] Air quality index (AQI)
+- [ ] Sunrise/sunset times
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how you can help:
+Contributions are welcome! Please:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
@@ -310,28 +252,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Contact & Support
+## 👨‍💻 Author
 
-- **Developer:** [Your Name]
-- **Email:** your.email@example.com
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Issues:** [Report a bug](https://github.com/yourusername/weather-app/issues)
-
----
-
-## 🙏 Acknowledgments
-
-- [OpenWeatherMap](https://openweathermap.org/) for weather data API
-- [GeoNames](http://www.geonames.org/) for city search API
-- [Flutter](https://flutter.dev/) team for the amazing framework
-- [Material Design](https://m3.material.io/) for design guidelines
+**Syeda Umaima** — [@Syeda-Umaima](https://github.com/Syeda-Umaima)
 
 ---
 
 <div align="center">
 
-**Made with ❤️ and Flutter**
+⭐ **Star this repo if you found it helpful!**
 
-⭐ Star this repo if you find it helpful!
+Made with ❤️ and Flutter
 
 </div>
