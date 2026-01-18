@@ -33,6 +33,6 @@ flutter:
   uses-material-design: true
 
   # Uncomment if you add assets
-  # assets:
-  #   - assets/images/
+  assets:
+    - assets/screenshots/
   #   - assets/icons/
